@@ -26,11 +26,7 @@ const userSchema = new mongoose.Schema({
 
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-},
-
-{
-    timestamps:true
-})
+}, {timestamps:true});
 
 userSchema.pre("save", async function () {
     if (!this.isModified("password")) {
@@ -41,7 +37,7 @@ userSchema.pre("save", async function () {
     this.password = hash
 
     return
-})
+});
 
 
 userSchema.methods.comparePassword = async function (password) {
@@ -68,6 +64,39 @@ userSchema.methods.getResetPasswordToken = function () {
 
 
 
-const UserModel = mongoose.model("user", userSchema)
 
-module.exports = UserModel
+const transactionSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true
+    },
+    type: {
+        type: String,
+        enum:["income", "expense"],
+        required: [true, "Type is required (income or expense)"]
+    },
+    amount: {
+        type: Number,
+        required: [true, "Amount is required"]
+    },
+    category: {
+        type: String,
+        required: [true, "Category is required"]
+    },
+    description: {
+        type: String,
+        trim: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    }
+}, { timestamps: true });
+
+
+
+const UserModel = mongoose.model("user", userSchema)
+const TransactionModel = mongoose.model("Transaction", transactionSchema)
+
+module.exports = {UserModel, TransactionModel}

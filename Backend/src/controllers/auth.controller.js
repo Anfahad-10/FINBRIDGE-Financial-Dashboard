@@ -1,4 +1,4 @@
-const userModel = require("../models/user.model")
+const { UserModel: userModel } = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 const emailService = require("../services/email.service")
 const crypto = require("crypto")
@@ -174,8 +174,8 @@ const getUserProfile = async (req, res) => {
     // req.user is provided by our auth middleware
     console.log("User from DB:", req.user);
     const user = await userModel.findById(req.user._id);
-    
-    
+
+
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
