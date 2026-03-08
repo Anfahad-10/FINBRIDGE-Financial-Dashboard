@@ -5,7 +5,6 @@ const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
     const[loading, setLoading] = useState(true);
 
-    // --- FETCH ALL TRANSACTIONS ---
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
@@ -28,12 +27,10 @@ const Transactions = () => {
         fetchTransactions();
     },[]);
 
-    // --- HELPER FUNCTIONS ---
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
     };
 
-    // Automatically assign colors and icons based on the category!
     const getCategoryStyle = (category) => {
         const styles = {
             'Software': { icon: 'laptop_mac', colorClass: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },

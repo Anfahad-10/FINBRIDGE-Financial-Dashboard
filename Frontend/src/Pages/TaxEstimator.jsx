@@ -1,271 +1,277 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FooterCredit from '../Components/FooterCredit';
 
 const TaxEstimator = () => {
+    const [formData, setFormData] = useState({
+        employmentType: 'Business', // 'Business' or 'Salaried'
+        grossIncome: '',
+        businessExpenses: '',
+        medicalInsurance: '',
+        lifeInsurance: '',
+        otherDeductions: '',
+        tdsDeducted: '' // Only used if Salaried
+    });
+
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const gross = parseFloat(formData.grossIncome) || 0;
+    const deductions = 
+        (parseFloat(formData.businessExpenses) || 0) +
+        (parseFloat(formData.medicalInsurance) || 0) +
+        (parseFloat(formData.lifeInsurance) || 0) +
+        (parseFloat(formData.otherDeductions) || 0);
+
+    let taxableIncome = Math.max(0, gross - deductions);
+
+    let totalTax = 0;
+    let remainingIncome = taxableIncome;
+
+    if (remainingIncome > 2000000) {
+        totalTax += (remainingIncome - 2000000) * 0.20;
+        remainingIncome = 2000000;
+    }
+    if (remainingIncome > 1000000) {
+        totalTax += (remainingIncome - 1000000) * 0.15;
+        remainingIncome = 1000000;
+    }
+    if (remainingIncome > 500000) {
+        totalTax += (remainingIncome - 500000) * 0.10;
+        remainingIncome = 500000;
+    }
+    if (remainingIncome > 250000) {
+        totalTax += (remainingIncome - 250000) * 0.05;
+    }
+
+    const tds = formData.employmentType === 'Salaried' ? (parseFloat(formData.tdsDeducted) || 0) : 0;
+    const finalTaxPayable = Math.max(0, totalTax - tds);
+
+    const q1 = finalTaxPayable * 0.15;
+    const q2 = finalTaxPayable * 0.30;
+    const q3 = finalTaxPayable * 0.30;
+    const q4 = finalTaxPayable * 0.25;
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+    };
+
     return (
-        <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative flex flex-col">
+        <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative block pb-20">
             
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="header-text text-3xl font-bold text-white">Tax Estimator & Calendar</h1>
-                    <p className="text-slate-400 mt-1 text-sm">Calculate your quarterly obligations and stay on top of deadlines.</p>
+                    <h1 className="header-text text-3xl font-bold text-white">Direct Tax Estimator</h1>
+                    <p className="text-slate-400 mt-1 text-sm">Calculate your advance tax based on standard slab rates.</p>
                 </div>
             </div>
 
             {/* Main Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                {/* Left Column: Calculator & Calendar */}
+                {/* Left Column: Calculator */}
                 <div className="lg:col-span-8 space-y-8">
                     
-                    {/* Quarterly Tax Calculator */}
-                    <div className="glass-panel p-6 rounded-2xl relative overflow-hidden">
+                    <div className="glass-panel p-6 rounded-2xl relative overflow-hidden flex-shrink-0">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-blue-400">calculate</span>
-                                Quarterly Tax Calculator
+                                <span className="material-symbols-outlined text-blue-400">person</span>
+                                Taxpayer Profile
                             </h3>
                         </div>
                         
                         <form className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Country/Region</label>
-                                    <div className="relative">
-                                        <select className="w-full rounded-lg input-glass py-3 px-4 text-sm appearance-none cursor-pointer">
-                                            <option>United States</option>
-                                            <option>Canada</option>
-                                            <option>United Kingdom</option>
-                                            <option>Australia</option>
-                                        </select>
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                            <span className="material-symbols-outlined text-lg">expand_more</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">State/Province</label>
-                                    <div className="relative">
-                                        <select className="w-full rounded-lg input-glass py-3 px-4 text-sm appearance-none cursor-pointer">
-                                            <option>California</option>
-                                            <option>New York</option>
-                                            <option>Texas</option>
-                                            <option>Florida</option>
-                                        </select>
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                            <span className="material-symbols-outlined text-lg">expand_more</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Filing Status</label>
-                                    <div className="relative">
-                                        <select className="w-full rounded-lg input-glass py-3 px-4 text-sm appearance-none cursor-pointer">
-                                            <option>Single</option>
-                                            <option>Married Filing Jointly</option>
-                                            <option>Head of Household</option>
-                                        </select>
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                            <span className="material-symbols-outlined text-lg">expand_more</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Quarter</label>
-                                    <div className="relative">
-                                        <select className="w-full rounded-lg input-glass py-3 px-4 text-sm appearance-none cursor-pointer">
-                                            <option>Q2 (Apr-Jun 2025)</option>
-                                            <option>Q3 (Jul-Sep 2025)</option>
-                                            <option>Q4 (Oct-Dec 2025)</option>
-                                            <option>Q1 (Jan-Mar 2026)</option>
-                                        </select>
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                                            <span className="material-symbols-outlined text-lg">expand_more</span>
-                                        </span>
-                                    </div>
+                            {/* Employment Type Toggle */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Employment Type</label>
+                                <div className="grid grid-cols-2 gap-3 mb-2">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData({...formData, employmentType: 'Business', tdsDeducted: ''})}
+                                        className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Business' ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                                    >
+                                        Business / Freelance
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData({...formData, employmentType: 'Salaried'})}
+                                        className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Salaried' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                                    >
+                                        Salaried
+                                    </button>
                                 </div>
                             </div>
                             
-                            <hr className="border-white/5 my-2" />
+                            <hr className="border-white/5 my-4" />
                             
                             <div className="space-y-4">
                                 <h4 className="text-sm font-semibold text-white">Income &amp; Deductions</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    
                                     <div className="space-y-2">
-                                        <label className="text-xs text-slate-400">Gross Income for Quarter</label>
+                                        <label className="text-xs text-slate-400">Gross Income</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <input type="number" min="0" name="grossIncome" value={formData.grossIncome} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="e.g. 800000" />
                                         </div>
                                     </div>
+
+                                    {/* Show TDS Input ONLY if Salaried */}
+                                    {formData.employmentType === 'Salaried' && (
+                                        <div className="space-y-2">
+                                            <label className="text-xs text-emerald-400">TDS Already Deducted (by Company)</label>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500">₹</span>
+                                                <input type="number" min="0" name="tdsDeducted" value={formData.tdsDeducted} onChange={handleInputChange} className="w-full rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 py-3 pl-8 pr-4 text-sm placeholder-emerald-800/50" placeholder="e.g. 15000" />
+                                            </div>
+                                        </div>
+                                    )}
+                                    
                                     <div className="space-y-2">
                                         <label className="text-xs text-slate-400">Business Expenses</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <input type="number" min="0" name="businessExpenses" value={formData.businessExpenses} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0" />
                                         </div>
                                     </div>
+                                    
                                     <div className="space-y-2">
-                                        <label className="text-xs text-slate-400">Health Insurance Premiums</label>
+                                        <label className="text-xs text-slate-400">Medical Insurance</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <input type="number" min="0" name="medicalInsurance" value={formData.medicalInsurance} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0" />
                                         </div>
                                     </div>
+                                    
                                     <div className="space-y-2">
-                                        <label className="text-xs text-slate-400">Home Office Deduction</label>
+                                        <label className="text-xs text-slate-400">Life Insurance / PPF</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <input type="number" min="0" name="lifeInsurance" value={formData.lifeInsurance} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0" />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs text-slate-400">Retirement Contributions</label>
-                                        <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
-                                        </div>
-                                    </div>
+                                    
                                     <div className="space-y-2">
                                         <label className="text-xs text-slate-400">Other Deductions</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                            <input className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0.00" type="text" />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <input type="number" min="0" name="otherDeductions" value={formData.otherDeductions} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm placeholder-slate-600" placeholder="0" />
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div className="flex justify-end pt-4">
-                                <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2" type="button">
-                                    <span className="material-symbols-outlined text-lg">calculate</span>
-                                    Calculate Estimated Tax
-                                </button>
                             </div>
                         </form>
                     </div>
 
-                    {/* Tax Calendar */}
-                    <div className="glass-panel rounded-2xl overflow-hidden mb-6">
-                        <div className="p-6 border-b border-white/5 flex justify-between items-center">
+                    {/* Tax Calendar Based on Slabs */}
+                    <div className="glass-panel rounded-2xl overflow-hidden mb-6 flex-shrink-0">
+                        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-[#131620]/50">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-purple-400">calendar_month</span>
-                                Tax Calendar
+                                <span className="material-symbols-outlined text-purple-400">event_upcoming</span>
+                                Advance Tax Schedule
                             </h3>
-                            <div className="flex gap-2 text-xs">
-                                <span className="px-2 py-1 rounded bg-slate-800/50 text-slate-400 border border-slate-700/50">2025</span>
-                            </div>
+                            <span className="px-2 py-1 rounded bg-purple-500/10 text-purple-400 text-xs border border-purple-500/20 font-bold">Financial Year 2025-26</span>
                         </div>
                         
-                        <div className="p-6 space-y-6">
-                            <div className="relative pl-8 border-l border-white/10 space-y-8">
-                                
-                                <div className="relative group">
-                                    <div className="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-[#0F111A] border-2 border-slate-600 group-hover:border-blue-400 transition-colors"></div>
-                                    <h4 className="text-sm font-semibold text-white mb-3">June 2025</h4>
-                                    
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h5 className="text-sm font-medium text-white">Reminder: Q2 Estimated Tax Payment</h5>
-                                                <p className="text-xs text-slate-400 mt-1">Due Date: Jun 15, 2025</p>
-                                            </div>
-                                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                                                Reminder
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Reminder for upcoming Q2 estimated tax payment due on Jun 15, 2025.</p>
-                                    </div>
-                                    
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all mt-3">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h5 className="text-sm font-medium text-white">Q2 Estimated Tax Payment</h5>
-                                                <p className="text-xs text-slate-400 mt-1">Due Date: Jun 15, 2025</p>
-                                            </div>
-                                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-                                                Payment
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Second quarter estimated tax payment due.</p>
-                                    </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                {/* Q1 */}
+                                <div className="glass-panel p-4 rounded-xl border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                                    <div className="text-xs text-slate-400 mb-1">Quarter 1 (15%)</div>
+                                    <div className="text-sm font-bold text-white mb-3">15th June</div>
+                                    <div className="text-xl font-bold text-blue-400">{formatCurrency(q1)}</div>
                                 </div>
-                                
-                                <div className="relative group">
-                                    <div className="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-[#0F111A] border-2 border-slate-600 group-hover:border-purple-400 transition-colors"></div>
-                                    <h4 className="text-sm font-semibold text-white mb-3">September 2025</h4>
-                                    
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h5 className="text-sm font-medium text-white">Reminder: Q3 Estimated Tax Payment</h5>
-                                                <p className="text-xs text-slate-400 mt-1">Due Date: Sep 15, 2025</p>
-                                            </div>
-                                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                                                Reminder
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Reminder for upcoming Q3 estimated tax payment due on Sep 15, 2025.</p>
-                                    </div>
-                                    
-                                    <div className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all mt-3">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h5 className="text-sm font-medium text-white">Q3 Estimated Tax Payment</h5>
-                                                <p className="text-xs text-slate-400 mt-1">Due Date: Sep 15, 2025</p>
-                                            </div>
-                                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-                                                Payment
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-slate-500">Third quarter estimated tax payment due.</p>
-                                    </div>
+
+                                {/* Q2 */}
+                                <div className="glass-panel p-4 rounded-xl border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                                    <div className="text-xs text-slate-400 mb-1">Quarter 2 (45%)</div>
+                                    <div className="text-sm font-bold text-white mb-3">15th Sept</div>
+                                    <div className="text-xl font-bold text-blue-400">{formatCurrency(q2)}</div>
                                 </div>
-                                
+
+                                {/* Q3 */}
+                                <div className="glass-panel p-4 rounded-xl border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                                    <div className="text-xs text-slate-400 mb-1">Quarter 3 (75%)</div>
+                                    <div className="text-sm font-bold text-white mb-3">15th Dec</div>
+                                    <div className="text-xl font-bold text-blue-400">{formatCurrency(q3)}</div>
+                                </div>
+
+                                {/* Q4 */}
+                                <div className="glass-panel p-4 rounded-xl border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                                    <div className="text-xs text-slate-400 mb-1">Quarter 4 (100%)</div>
+                                    <div className="text-sm font-bold text-white mb-3">15th March</div>
+                                    <div className="text-xl font-bold text-blue-400">{formatCurrency(q4)}</div>
+                                </div>
                             </div>
+                            <p className="text-xs text-slate-500 mt-4 text-center">
+                                *Percentages indicate cumulative tax due. Amounts shown are the installments due for that specific quarter.
+                            </p>
                         </div>
                     </div>
                 </div>
                 
-                {/* Right Column: Tax Summary */}
+                {/* Right Column: Dynamic Tax Summary */}
                 <div className="lg:col-span-4 space-y-6">
-                    <div className="glass-panel p-8 rounded-2xl sticky top-24">
+                    <div className="glass-panel p-8 rounded-2xl sticky top-24 border border-orange-500/20 shadow-[0_0_30px_rgba(249,115,22,0.05)]">
                         <div className="flex justify-between items-start mb-8">
                             <h3 className="text-lg font-bold text-white">Tax Summary</h3>
-                            <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-orange-400">receipt</span>
+                            <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shadow-lg shadow-orange-500/10">
+                                <span className="material-symbols-outlined text-orange-400">receipt_long</span>
                             </div>
                         </div>
                         
-                        <div className="flex flex-col items-center justify-center py-8 text-center border-b border-white/5 mb-6">
-                            <div className="w-16 h-16 mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
-                                <span className="material-symbols-outlined text-2xl">calculate</span>
-                            </div>
-                            <p className="text-sm text-slate-400 max-w-[200px] leading-relaxed">Enter your income and deduction details to calculate your estimated quarterly tax.</p>
-                        </div>
-                        
-                        <div className="space-y-4 opacity-50 pointer-events-none filter blur-[1px]">
+                        <div className="space-y-4">
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-400">Gross Income</span>
-                                <span className="text-white font-medium">$0.00</span>
+                                <span className="text-white font-medium">{formatCurrency(gross)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-slate-400">Deductions</span>
-                                <span className="text-red-400 font-medium">-$0.00</span>
+                                <span className="text-slate-400">Total Deductions</span>
+                                <span className="text-red-400 font-medium">-{formatCurrency(deductions)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-400">Taxable Income</span>
-                                <span className="text-white font-medium">$0.00</span>
+                                <span className="text-white font-bold">{formatCurrency(taxableIncome)}</span>
                             </div>
-                            <div className="h-px bg-white/10 my-2"></div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm text-slate-300 font-bold">Estimated Tax</span>
-                                <span className="text-xl text-white font-bold header-text">$0.00</span>
+                            
+                            <div className="h-px bg-white/10 my-4"></div>
+
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-400">Total Tax (By Slabs)</span>
+                                <span className="text-white font-medium">{formatCurrency(totalTax)}</span>
+                            </div>
+
+                            {formData.employmentType === 'Salaried' && (
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-emerald-400">TDS Deducted</span>
+                                    <span className="text-emerald-400 font-medium">-{formatCurrency(tds)}</span>
+                                </div>
+                            )}
+                            
+                            <div className="bg-[#131620] p-4 rounded-xl border border-white/5 mt-4">
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-sm text-slate-300 font-bold">Remaining Tax</span>
+                                    <span className="text-2xl text-orange-400 font-bold header-text">{formatCurrency(finalTaxPayable)}</span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 text-right mt-1">To be paid via Advance Tax Quarters</p>
+                            </div>
+
+                            {/* Current Slabs Reference */}
+                            <div className="pt-4 border-t border-white/5 mt-4">
+                                <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-2 font-bold">Current Tax Slabs</p>
+                                <div className="text-[11px] text-slate-400 space-y-1">
+                                    <div className="flex justify-between"><span>0 - 2.5L</span><span>0%</span></div>
+                                    <div className="flex justify-between"><span>2.5L - 5L</span><span>5%</span></div>
+                                    <div className="flex justify-between"><span>5L - 10L</span><span>10%</span></div>
+                                    <div className="flex justify-between"><span>10L - 20L</span><span>15%</span></div>
+                                    <div className="flex justify-between"><span> 20L</span><span>20%</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -273,7 +279,7 @@ const TaxEstimator = () => {
             </div>
 
             {/* --- GLOBAL FOOTER --- */}
-            <div className="border-t border-white/5 mt-auto pt-6">
+            <div className="border-t border-white/5 mt-auto pt-6 flex-shrink-0">
                 <FooterCredit />
             </div>
 

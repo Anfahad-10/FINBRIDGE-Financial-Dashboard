@@ -3,7 +3,6 @@ import FooterCredit from '../Components/FooterCredit';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
 const Budgets = () => {
-    // --- STATE ---
     const[budgets, setBudgets] = useState([]);
     const [loading, setLoading] = useState(true);
     const[isFormOpen, setIsFormOpen] = useState(false);
@@ -14,7 +13,6 @@ const Budgets = () => {
     });
     const[isSubmitting, setIsSubmitting] = useState(false);
 
-    // --- FETCH BUDGETS ---
     const fetchBudgets = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -37,17 +35,14 @@ const Budgets = () => {
         fetchBudgets();
     },[]);
 
-    // --- HANDLE FORM & EDITING ---
     const handleInputChange = (e) => {
         setFormData({ ...formData,[e.target.name]: e.target.value });
     };
 
     const handleEditBudget = (budget) => {
-        // Pre-fill the form with the existing budget data
         setFormData({ category: budget.category, limit: budget.limit });
         setIsFormOpen(true);
         
-        // Smooth scroll to the top where the form is
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -74,7 +69,7 @@ const Budgets = () => {
             if (result.success) {
                 setFormData({ category: 'Software', limit: '' });
                 setIsFormOpen(false);
-                fetchBudgets(); // Refresh the list!
+                fetchBudgets();                                  // Refresh the list
             } else {
                 alert(result.message || "Failed to save budget");
             }
@@ -86,7 +81,6 @@ const Budgets = () => {
         }
     };
 
-    // --- HELPER FUNCTIONS ---
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
     };
@@ -114,7 +108,6 @@ const Budgets = () => {
     if (loading) return <div className="text-white p-10">Loading Budgets...</div>;
 
     return (
-        /* FIXED CSS HERE: Removed 'flex flex-col' so the inline form doesn't get squished */
         <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative block pb-20">
             
             {/* Header */}
