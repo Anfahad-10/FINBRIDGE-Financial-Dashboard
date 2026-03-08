@@ -45,18 +45,14 @@ userSchema.methods.comparePassword = async function (password) {
 }
 
 
-// This generates a token, hashes it for the DB, but returns the plain token to send in email
 userSchema.methods.getResetPasswordToken = function () {
-  // 1. Generate a random 20-byte token
   const resetToken = crypto.randomBytes(20).toString("hex");
 
-  // 2. Hash the token (we store the hash, user gets the plain text)
   this.resetPasswordToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
-  // 3. Set expiration (10 minutes)
   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
   return resetToken;

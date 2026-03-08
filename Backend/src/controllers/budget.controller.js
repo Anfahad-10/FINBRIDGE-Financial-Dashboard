@@ -4,10 +4,10 @@ const { TransactionModel: Transaction } = require("../models/user.model");
 
 exports.createBudget = async (req, res) => {
     try {
-        const { category, limit } = req.body;
+        const { category, limit, month } = req.body;
         
-        // if exists update the limit
-        let budget = await Budget.findOne({ user: req.user._id, category });
+        
+        let budget = await Budget.findOne({ user: req.user._id, category, month });
         
         if (budget) {
             budget.limit = limit;
@@ -16,7 +16,8 @@ exports.createBudget = async (req, res) => {
             budget = await Budget.create({
                 user: req.user._id,
                 category,
-                limit
+                limit,
+                month
             });
         }
 
@@ -26,16 +27,18 @@ exports.createBudget = async (req, res) => {
     }
 };
 
-// --- Budget with spending progress ---
 exports.getBudgets = async (req, res) => {
     try {
         const userId = req.user._id;
-
-        const budgets = await Budget.find({ user: userId });
-
+        
         const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+        const targetMonth = req.query.month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        
+        const budgets = await Budget.find({ user: userId, month: targetMonth });
+
+        const[year, monthStr] = targetMonth.split('-');
+        const startOfMonth = new Date(year, parseInt(monthStr) - 1, 1);
+        const endOfMonth = new Date(year, parseInt(monthStr), 0, 23, 59, 59);
 
         const expensesThisMonth = await Transaction.aggregate([
             { 
@@ -50,13 +53,11 @@ exports.getBudgets = async (req, res) => {
 
         const budgetProgress = budgets.map(budget => {
             const expenseItem = expensesThisMonth.find(e => e._id === budget.category);
-            const spent = expenseItem ? expenseItem.totalSpent : 0;
-            
             return {
                 _id: budget._id,
                 category: budget.category,
                 limit: budget.limit,
-                spent: spent
+                spent: expenseItem ? expenseItem.totalSpent : 0
             };
         });
 

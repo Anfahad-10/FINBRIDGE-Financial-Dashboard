@@ -6,17 +6,23 @@ const Budgets = () => {
     const[budgets, setBudgets] = useState([]);
     const [loading, setLoading] = useState(true);
     const[isFormOpen, setIsFormOpen] = useState(false);
+
+    const currentMonth = new Date().toISOString().slice(0, 7); // Gets "YYYY-MM"
+    const[selectedMonth, setSelectedMonth] = useState(currentMonth); 
     
     const [formData, setFormData] = useState({
         category: 'Software',
-        limit: ''
+        customCategory: '',
+        limit: '',
+        month: currentMonth
     });
+
     const[isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchBudgets = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/budgets', {
+            const response = await fetch(`/api/budgets?month=${selectedMonth}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await response.json();
@@ -33,7 +39,7 @@ const Budgets = () => {
 
     useEffect(() => {
         fetchBudgets();
-    },[]);
+    },[selectedMonth]);
 
     const handleInputChange = (e) => {
         setFormData({ ...formData,[e.target.name]: e.target.value });
@@ -59,15 +65,16 @@ const Budgets = () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    category: formData.category,
-                    limit: Number(formData.limit)
+                    category: formData.category === 'Other Expense' ? formData.customCategory : formData.category,
+                    limit: Number(formData.limit),
+                    month: formData.month
                 })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                setFormData({ category: 'Software', limit: '' });
+                setFormData({ category: 'Software',customCategory: '',  limit: '' });
                 setIsFormOpen(false);
                 fetchBudgets();                                  // Refresh the list
             } else {
@@ -143,8 +150,9 @@ const Budgets = () => {
                         <span className="material-symbols-outlined text-blue-400">edit_square</span>
                         {formData.limit ? 'Edit Category Limit' : 'Set Category Limit'}
                     </h2>
-                    
+                    {/* 1. Category Dropdown */}
                     <form onSubmit={handleCreateBudget} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+                        {/* 1. Category Dropdown */}
                         <div className="md:col-span-5 space-y-2">
                             <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Category</label>
                             <div className="relative">
@@ -161,9 +169,45 @@ const Budgets = () => {
                                     <option value="Travel">Travel</option>
                                     <option value="Equipment">Equipment</option>
                                     <option value="Utilities">Utilities</option>
-                                    <option value="Other">Other Expense</option>
+                                    {/* Make sure the value here says "Other Expense" */}
+                                    <option value="Other Expense">Other Expense</option> 
                                 </select>
                                 <span className="material-symbols-outlined absolute right-3 top-3 text-slate-500 text-sm pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+                        
+                        {/* 2. ONLY SHOW THIS IF "Other Expense" IS SELECTED */}
+                        {formData.category === 'Other Expense' && (
+                            <div className="md:col-span-12 space-y-2">
+                                <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Custom Category Name</label>
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-3 top-3 text-slate-500 text-lg">edit</span>
+                                    <input 
+                                        type="text" 
+                                        name="customCategory"
+                                        value={formData.customCategory}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="glass-input w-full pl-10 pr-4 py-2.5 rounded-lg text-sm text-white placeholder-slate-500" 
+                                        placeholder="e.g. Pet Supplies" 
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 3. Month Picker */}
+                        <div className="md:col-span-4 space-y-2">
+                            <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Applicable Month</label>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-3 top-3 text-slate-500 text-lg">calendar_month</span>
+                                <input 
+                                    type="month" 
+                                    name="month"
+                                    value={formData.month}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="glass-input w-full pl-10 pr-4 py-2.5 rounded-lg text-sm text-white [color-scheme:dark]" 
+                                />
                             </div>
                         </div>
                         
@@ -193,7 +237,15 @@ const Budgets = () => {
                 </div>
             )}
 
-            <h3 className="text-lg font-bold text-white mb-6 px-1">Active Budgets (Current Month)</h3>
+            <div className="flex justify-between items-center mb-6 px-1">
+                <h3 className="text-lg font-bold text-white">Active Budgets</h3>
+                <input 
+                    type="month" 
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="glass-input px-3 py-1.5 rounded-lg text-sm text-slate-300[color-scheme:dark] border-white/10"
+                />
+            </div>
             
             {/* Budgets Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">

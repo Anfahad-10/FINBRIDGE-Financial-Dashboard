@@ -110,19 +110,29 @@ const DashboardLayout = () => {
                 </div>
 
                 {/* User Profile in Sidebar */}
-                <div className="p-4">
-                    <div className="glass-panel p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 cursor-pointer transition-colors border-white/5">
-                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden border border-white/10">
+                <div className="p-4 mt-auto">
+                    <Link 
+                        to="/settings" 
+                        className="glass-panel p-4 rounded-xl flex items-center gap-3 hover:bg-white/10 cursor-pointer transition-colors border-white/5 group"
+                    >
+                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden border border-white/10 group-hover:border-blue-400 transition-colors">
                             {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <h4 className="text-sm font-bold text-white truncate">{user.name}</h4>
+                            <h4 className="text-sm font-bold text-white truncate group-hover:text-blue-400 transition-colors">{user.name}</h4>
                             <p className="text-xs text-slate-400 truncate">Freelancer Pro</p>
                         </div>
-                        <button onClick={handleLogout} title="Logout">
-                            <span className="material-symbols-outlined text-slate-500 hover:text-red-400 text-lg transition-colors">logout</span>
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault(); // Prevents the Link from clicking when you just want to logout
+                                handleLogout();
+                            }} 
+                            title="Logout"
+                            className="p-1.5 rounded-lg hover:bg-red-500/20 group/logout transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-slate-500 group-hover/logout:text-red-400 text-lg transition-colors">logout</span>
                         </button>
-                    </div>
+                    </Link>
                 </div>
             </aside>
 

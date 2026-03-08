@@ -10,6 +10,10 @@ const budgetSchema = new mongoose.Schema({
         type: String,
         required:[true, "Category is required"]
     },
+    month: {
+        type: String, // format will be "YYYY-MM" like "2026-03"
+        required:[true, "Month is required"]
+    },
     limit: {
         type: Number,
         required: [true, "Budget limit is required"]

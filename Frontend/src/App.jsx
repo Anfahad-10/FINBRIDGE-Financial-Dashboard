@@ -17,6 +17,7 @@ import Transactions from './Pages/Transactions';
 import Budgets from './Pages/Budgets';
 import TaxEstimator from './Pages/TaxEstimator';
 import Reports from './Pages/Reports';
+import Settings from './Pages/Settings';
 
 
 
@@ -40,7 +41,8 @@ function App() {
           <Route path="/transactions" element={<Transactions />} />        
           <Route path="/budgets" element={<Budgets />} />        
           <Route path="/tax-estimator" element={<TaxEstimator />} />        
-          <Route path="/reports" element={<Reports />} />        
+          <Route path="/reports" element={<Reports />} /> 
+          <Route path="/settings" element={<Settings />} />        
         </Route>        
       </Routes>
     </div>
