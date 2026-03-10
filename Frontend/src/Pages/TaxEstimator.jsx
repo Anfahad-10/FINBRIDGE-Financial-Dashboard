@@ -51,9 +51,9 @@ const TaxEstimator = () => {
     const finalTaxPayable = Math.max(0, totalTax - tds);
 
     const q1 = finalTaxPayable * 0.15;
-    const q2 = finalTaxPayable * 0.30;
-    const q3 = finalTaxPayable * 0.30;
-    const q4 = finalTaxPayable * 0.25;
+    const q2 = finalTaxPayable * 0.45;
+    const q3 = finalTaxPayable * 0.75;
+    const q4 = finalTaxPayable * 1;
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
