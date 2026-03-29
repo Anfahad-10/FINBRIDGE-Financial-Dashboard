@@ -1,5 +1,6 @@
 const Transaction = require("../models/transaction.model"); 
 const TaxEstimate = require("../models/tax.model");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 exports.chatAssistant = async (req, res) => {
     try {
@@ -75,5 +76,55 @@ exports.chatAssistant = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+// --- REAL VISION AI: SCAN RECEIPT ---
+exports.scanReceipt = async (req, res) => {
+    try {
+        const { image } = req.body; // This is the base64 image from frontend
+        
+        if (!process.env.GEMINI_API_KEY) {
+            return res.status(400).json({ success: false, message: "Gemini API Key missing in .env" });
+        }
+
+        // 1. Extract the mime type and base64 data from the string
+        const matches = image.match(/^data:(.+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) {
+            return res.status(400).json({ success: false, message: "Invalid image format" });
+        }
+        const mimeType = matches[1];
+        const base64Data = matches[2];
+
+        // 2. Initialize Google Gemini Vision
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // 3. Tell the AI exactly what we want it to extract
+        const prompt = `Analyze this receipt. Return ONLY a valid JSON object with no markdown formatting. Extract these exact keys:
+        {
+            "amount": (The total amount as a number, e.g., 1250),
+            "category": (Choose the best fit: "Food & Dining", "Travel", "Equipment", "Software", "Utilities", "Housing", or "Other"),
+            "description": (A short 2-3 word name of the merchant or item),
+            "date": (The date on the receipt in YYYY-MM-DD format)
+        }`;
+
+        const imageParts =[{ inlineData: { data: base64Data, mimeType: mimeType } }];
+
+        // 4. Send to Google and wait for the response!
+        const result = await model.generateContent([prompt, ...imageParts]);
+        const response = await result.response;
+        let text = response.text();
+        
+        // Clean up Markdown formatting if Gemini returns ```json ... ```
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        const extractedData = JSON.parse(text);
+
+        res.status(200).json({ success: true, data: extractedData });
+
+    } catch (error) {
+        console.error("AI Scan Error:", error);
+        res.status(500).json({ success: false, message: "Failed to read the receipt. Please try a clearer image." });
     }
 };

@@ -10,6 +10,8 @@ const Dashboard = () => {
     const { user } = useOutletContext();
     const [aiInsight, setAiInsight] = useState(null);
     const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+    const[isScanning, setIsScanning] = useState(false);
+    const [scannedImage, setScannedImage] = useState(null);
 
     const [stats, setStats] = useState({
         totalIncome: 0,
@@ -57,6 +59,58 @@ const Dashboard = () => {
     const handleInputChange = (e) => {
         setFormData({ ...formData,[e.target.name]: e.target.value });
     };
+
+    // --- AI RECEIPT SCANNER SIMULATION ---
+    // --- REAL AI RECEIPT SCANNER ---
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const base64Image = event.target.result;
+            setScannedImage(base64Image); // Show preview
+            setIsScanning(true); // Start scanning animation
+
+            try {
+                const token = localStorage.getItem('token');
+                // Send the image to our real Gemini AI Backend!
+                const response = await fetch('/api/ai/scan-receipt', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ image: base64Image })
+                });
+                
+                const result = await response.json();
+
+                if (result.success) {
+                    // Fill the form with the REAL extracted data!
+                    setFormData({
+                        type: 'expense',
+                        amount: result.data.amount || '',
+                        category: result.data.category || 'Other',
+                        description: result.data.description || 'Unknown Merchant',
+                        date: result.data.date || new Date().toISOString().split('T')[0]
+                    });
+                } else {
+                    alert(result.message || "AI failed to read the receipt.");
+                }
+            } catch (error) {
+                console.error("Scanner Error:", error);
+                alert("Network error while scanning receipt.");
+            } finally {
+                setIsScanning(false);
+                setTimeout(() => setScannedImage(null), 2000); // Hide preview after a moment
+            }
+        };
+        
+        // This converts the image file into a string format we can send to the backend
+        reader.readAsDataURL(file);
+    };
+
 
     // Submit new transaction
     const handleAddTransaction = async (e) => {
@@ -113,80 +167,59 @@ const Dashboard = () => {
         <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative flex flex-col">
             
             {/* --- MODAL POPUP --- */}
+            {/* --- MODAL POPUP --- */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F111A]/80 backdrop-blur-sm px-4">
-                    <div className="glass-panel w-full max-w-md p-6 rounded-2xl relative border border-white/10 shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F111A]/80 backdrop-blur-sm px-4 animate-fade-in">
+                    <div className="glass-panel w-full max-w-md p-6 rounded-2xl relative border border-white/10 shadow-2xl overflow-hidden">
+                        
                         {/* Close Button */}
-                        <button 
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
-                        >
+                        <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-20">
                             <span className="material-symbols-outlined">close</span>
                         </button>
                         
                         <h2 className="text-xl font-bold text-white mb-6">Add Transaction</h2>
                         
-                        <form onSubmit={handleAddTransaction} className="space-y-4">
+                        {/* ✨ AI Receipt Scanner Button ✨ */}
+                        <div className="mb-6 pb-6 border-b border-white/10 relative">
+                            {scannedImage && (
+                                <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#131620]/90 backdrop-blur-sm rounded-lg border border-purple-500/30 overflow-hidden">
+                                    <img src={scannedImage} alt="Receipt Preview" className="h-full object-contain opacity-50" />
+                                    {isScanning && (
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/50 to-transparent w-full h-10 animate-scan border-y border-purple-400"></div>
+                                    )}
+                                    {isScanning && <span className="absolute text-white font-bold text-sm tracking-widest drop-shadow-md">SCANNING RECEIPT...</span>}
+                                    {!isScanning && <span className="absolute text-emerald-400 font-bold text-sm flex items-center gap-1"><span className="material-symbols-outlined">check_circle</span> DATA EXTRACTED</span>}
+                                </div>
+                            )}
+                            
+                            <label className="w-full py-3 rounded-lg bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-300 text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                                <span className="material-symbols-outlined text-[18px]">document_scanner</span>
+                                Auto-Fill with AI Receipt Scan
+                                <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                            </label>
+                        </div>
+                        
+                        <form onSubmit={handleAddTransaction} className="space-y-4 relative z-0">
                             {/* Type (Income/Expense) */}
                             <div className="grid grid-cols-2 gap-3 mb-2">
-                                <button 
-                                    type="button"
-                                    onClick={() => setFormData({...formData, type: 'expense'})}
-                                    className={`py-2 rounded-lg text-sm font-bold border transition-all ${formData.type === 'expense' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
-                                >
-                                    Expense
-                                </button>
-                                <button 
-                                    type="button"
-                                    onClick={() => setFormData({...formData, type: 'income'})}
-                                    className={`py-2 rounded-lg text-sm font-bold border transition-all ${formData.type === 'income' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
-                                >
-                                    Income
-                                </button>
+                                <button type="button" onClick={() => setFormData({...formData, type: 'expense'})} className={`py-2 rounded-lg text-sm font-bold border transition-all ${formData.type === 'expense' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Expense</button>
+                                <button type="button" onClick={() => setFormData({...formData, type: 'income'})} className={`py-2 rounded-lg text-sm font-bold border transition-all ${formData.type === 'income' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Income</button>
                             </div>
 
                             {/* Amount */}
                             <div>
                                 <label className="text-xs font-medium text-slate-400 ml-1">Amount (₹)</label>
-                                <input 
-                                    type="number" 
-                                    name="amount"
-                                    value={formData.amount}
-                                    onChange={handleInputChange}
-                                    required
-                                    min="0.01"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm"
-                                />
+                                <input type="number" name="amount" value={formData.amount} onChange={handleInputChange} required min="0.01" step="0.01" placeholder="0.00" className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm transition-all focus:ring-2 focus:ring-blue-500" />
                             </div>
 
                             {/* Category */}
                             <div>
                                 <label className="text-xs font-medium text-slate-400 ml-1">Category</label>
-                                <select 
-                                    name="category"
-                                    value={formData.category}
-                                    onChange={handleInputChange}
-                                    className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm cursor-pointer appearance-none"
-                                >
+                                <select name="category" value={formData.category} onChange={handleInputChange} className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm cursor-pointer appearance-none bg-[#131620]">
                                     {formData.type === 'income' ? (
-                                        <>
-                                            <option value="Freelance">Freelance</option>
-                                            <option value="Salary">Salary</option>
-                                            <option value="Investments">Investments</option>
-                                            <option value="Other">Other Income</option>
-                                        </>
+                                        <><option value="Freelance">Freelance</option><option value="Salary">Salary</option><option value="Investments">Investments</option><option value="Other">Other Income</option></>
                                     ) : (
-                                        <>
-                                            <option value="Software">Software</option>
-                                            <option value="Food & Dining">Food & Dining</option>
-                                            <option value="Housing">Housing</option>
-                                            <option value="Travel">Travel</option>
-                                            <option value="Equipment">Equipment</option>
-                                            <option value="Utilities">Utilities</option>
-                                            <option value="Other">Other Expense</option>
-                                        </>
+                                        <><option value="Software">Software</option><option value="Food & Dining">Food & Dining</option><option value="Housing">Housing</option><option value="Travel">Travel</option><option value="Equipment">Equipment</option><option value="Utilities">Utilities</option><option value="Other">Other Expense</option></>
                                     )}
                                 </select>
                             </div>
@@ -194,35 +227,17 @@ const Dashboard = () => {
                             {/* Description */}
                             <div>
                                 <label className="text-xs font-medium text-slate-400 ml-1">Description (Optional)</label>
-                                <input 
-                                    type="text" 
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleInputChange}
-                                    placeholder="e.g., Figma Subscription"
-                                    className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm"
-                                />
+                                <input type="text" name="description" value={formData.description} onChange={handleInputChange} placeholder="e.g., Figma Subscription" className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm" />
                             </div>
 
                             {/* Date */}
                             <div>
                                 <label className="text-xs font-medium text-slate-400 ml-1">Date</label>
-                                <input 
-                                    type="date" 
-                                    name="date"
-                                    value={formData.date}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm [color-scheme:dark]"
-                                />
+                                <input type="date" name="date" value={formData.date} onChange={handleInputChange} required className="w-full mt-1 px-4 py-3 glass-input rounded-lg text-sm [color-scheme:dark]" />
                             </div>
 
                             {/* Submit */}
-                            <button 
-                                type="submit" 
-                                disabled={isSubmitting}
-                                className="w-full mt-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50"
-                            >
+                            <button type="submit" disabled={isSubmitting || isScanning} className="w-full mt-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50">
                                 {isSubmitting ? 'Saving...' : 'Save Transaction'}
                             </button>
                         </form>

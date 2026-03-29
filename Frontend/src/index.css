@@ -331,6 +331,18 @@ select.glass-input option, select.input-glass option {
 }
 
 
+/*-----------------------------------------------------------------*/
+
+/* AI Scanner Animation */
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+.animate-scan {
+  animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
