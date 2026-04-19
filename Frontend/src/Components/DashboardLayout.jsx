@@ -11,9 +11,18 @@ const DashboardLayout = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [inputText, setInputText] = useState('');
     const[isTyping, setIsTyping] = useState(false);
-    const [messages, setMessages] = useState([
-        { text: "Hi! I'm TaxPal AI. The financial year ends in just 3 days (March 31, 2026). How can I help you optimize your taxes today?", isBot: true }
-    ]);
+    const [messages, setMessages] = useState(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        // In India, if it's Jan, Feb, or Mar (0, 1, 2), we are in the previous year's FY
+        const isNewFY = today.getMonth() >= 3; 
+        const fy = isNewFY ? `${year}-${(year + 1).toString().slice(2)}` : `${year - 1}-${year.toString().slice(2)}`;
+        
+        return[{ 
+            text: `Hi! I'm TaxPal AI. Welcome to Financial Year ${fy}. How can I help you optimize your taxes and budget today?`, 
+            isBot: true 
+        }];
+    });
     const messagesEndRef = useRef(null);
 
     // --- FETCH USER ---
@@ -56,35 +65,41 @@ const DashboardLayout = () => {
     const isActive = (path) => location.pathname === path;
 
     // --- AI CHAT LOGIC ---
-    const handleSendMessage = (e) => {
+    // --- REAL-TIME DATABASE-DRIVEN AI CHAT LOGIC ---
+    const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!inputText.trim()) return;
 
         const userMsg = inputText.trim();
+        // Add user's message to UI immediately
         setMessages(prev => [...prev, { text: userMsg, isBot: false }]);
         setInputText('');
         setIsTyping(true);
 
-        // Simulate AI thinking for 1.5 seconds
-        setTimeout(() => {
-            let botReply = "I can help you analyze your finances! Try asking me about your 'taxes', 'budget', or 'investments'.";
-            const lowerMsg = userMsg.toLowerCase();
-
-            if (lowerMsg.includes('tax') || lowerMsg.includes('advance') || lowerMsg.includes('due')) {
-                botReply = "Your next Advance Tax installment (Q1) for FY 2026-27 is due on June 15th. Check the Tax Estimator page for the exact amount!";
-            } else if (lowerMsg.includes('80c') || lowerMsg.includes('save') || lowerMsg.includes('invest')) {
-                botReply = "You have exactly 3 days left (until March 31, 2026) to claim your ₹1.5L deduction under Section 80C! Consider ELSS, PPF, or Life Insurance immediately to save up to ₹45,000 in tax.";
-            } else if (lowerMsg.includes('expense') || lowerMsg.includes('spend') || lowerMsg.includes('budget')) {
-                botReply = "To see a detailed breakdown of your spending, visit the Budgets page. I'll automatically warn you if you cross 85% of any category limit!";
-            } else if (lowerMsg.includes('report') || lowerMsg.includes('csv')) {
-                botReply = "You can download a clean CSV of all your transactions for your CA by heading to the Reports tab!";
-            } else if (lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
-                botReply = `Hello ${user?.name.split(' ')[0] || 'there'}! Ready to master your finances today?`;
+        try {
+            const token = localStorage.getItem('token');
+            // This calls our real backend controller!
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ message: userMsg })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                setMessages(prev =>[...prev, { text: result.reply.replace(/\*\*/g, ''), isBot: true }]);
+            } else {
+                setMessages(prev =>[...prev, { text: "Sorry, I'm having trouble connecting to your database right now.", isBot: true }]);
             }
-
-            setMessages(prev =>[...prev, { text: botReply, isBot: true }]);
+        } catch (error) {
+            setMessages(prev =>[...prev, { text: "Network error occurred. Make sure your backend server is running!", isBot: true }]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     if (loading) {
