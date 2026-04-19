@@ -2,7 +2,7 @@
   "rewrites":[
     {
       "source": "/api/(.*)",
-      "destination": "https://finbridge-financial-dashboard.onrender.com/"
+      "destination": "https://finbridge-financial-dashboard.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",

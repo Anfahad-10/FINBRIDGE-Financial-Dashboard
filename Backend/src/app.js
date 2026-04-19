@@ -29,4 +29,5 @@ app.use(cors({
 app.use(express.json());
 
 
+//app.get("/", (req, res) => { res.send("FINBRIDGE API is running perfectly!"); });
 module.exports = app 
