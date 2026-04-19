@@ -10,17 +10,17 @@ const DashboardLayout = () => {
     // --- AI CHATBOT STATE ---
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [inputText, setInputText] = useState('');
-    const[isTyping, setIsTyping] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState(() => {
         const today = new Date();
         const year = today.getFullYear();
         // In India, if it's Jan, Feb, or Mar (0, 1, 2), we are in the previous year's FY
-        const isNewFY = today.getMonth() >= 3; 
+        const isNewFY = today.getMonth() >= 3;
         const fy = isNewFY ? `${year}-${(year + 1).toString().slice(2)}` : `${year - 1}-${year.toString().slice(2)}`;
-        
-        return[{ 
-            text: `Hi! I'm TaxPal AI. Welcome to Financial Year ${fy}. How can I help you optimize your taxes and budget today?`, 
-            isBot: true 
+
+        return [{
+            text: `Hi! I'm FINBRIDGE AI. Welcome to Financial Year ${fy}. How can I help you optimize your taxes and budget today?`,
+            isBot: true
         }];
     });
     const messagesEndRef = useRef(null);
@@ -81,22 +81,22 @@ const DashboardLayout = () => {
             // This calls our real backend controller!
             const response = await fetch('/api/ai/chat', {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ message: userMsg })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
-                setMessages(prev =>[...prev, { text: result.reply.replace(/\*\*/g, ''), isBot: true }]);
+                setMessages(prev => [...prev, { text: result.reply.replace(/\*\*/g, ''), isBot: true }]);
             } else {
-                setMessages(prev =>[...prev, { text: "Sorry, I'm having trouble connecting to your database right now.", isBot: true }]);
+                setMessages(prev => [...prev, { text: "Sorry, I'm having trouble connecting to your database right now.", isBot: true }]);
             }
         } catch (error) {
-            setMessages(prev =>[...prev, { text: "Network error occurred. Make sure your backend server is running!", isBot: true }]);
+            setMessages(prev => [...prev, { text: "Network error occurred. Make sure your backend server is running!", isBot: true }]);
         } finally {
             setIsTyping(false);
         }
@@ -125,7 +125,7 @@ const DashboardLayout = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500/80 to-purple-500/20 border border-blue-400/20 flex items-center justify-center backdrop-blur-sm">
                             <span className="material-symbols-outlined text-white text-[20px]">account_balance_wallet</span>
                         </div>
-                        <span className="header-text text-xl font-bold text-white tracking-tight">TaxPal</span>
+                        <span className="header-text text-xl font-bold text-white tracking-tight">FINBRIDGE</span>
                     </div>
 
                     <nav className="mt-8 px-4 space-y-2">
@@ -174,7 +174,7 @@ const DashboardLayout = () => {
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500/80 to-purple-500/20 border border-blue-400/20 flex items-center justify-center">
                         <span className="material-symbols-outlined text-white text-[20px]">account_balance_wallet</span>
                     </div>
-                    <span className="header-text text-lg font-bold text-white">TaxPal</span>
+                    <span className="header-text text-lg font-bold text-white">FINBRIDGE</span>
                 </div>
                 <button className="text-slate-300" onClick={handleLogout}>
                     <span className="material-symbols-outlined">logout</span>
@@ -187,7 +187,7 @@ const DashboardLayout = () => {
             {/* ========================================= */}
             {/* ✨ FLOATING AI CHAT ASSISTANT WIDGET ✨     */}
             {/* ========================================= */}
-            
+
             {/* Chat Window */}
             {isChatOpen && (
                 <div className="fixed bottom-24 right-6 w-80 sm:w-96 h-[450px] bg-[#131620]/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-[0_0_40px_rgba(168,85,247,0.2)] z-[100] flex flex-col overflow-hidden animate-fade-in origin-bottom-right">
@@ -198,7 +198,7 @@ const DashboardLayout = () => {
                                 <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-white leading-tight">TaxPal AI</h3>
+                                <h3 className="text-sm font-bold text-white leading-tight">FINBRIDGE AI</h3>
                                 <p className="text-[10px] text-emerald-400 flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online
                                 </p>
@@ -213,16 +213,15 @@ const DashboardLayout = () => {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-gradient-to-b from-transparent to-purple-900/5">
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
-                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
-                                    msg.isBot 
-                                        ? 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-sm' 
+                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.isBot
+                                        ? 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-sm'
                                         : 'bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-tr-sm shadow-lg shadow-purple-500/20'
-                                }`}>
+                                    }`}>
                                     {msg.text}
                                 </div>
                             </div>
                         ))}
-                        
+
                         {/* Typing Indicator */}
                         {isTyping && (
                             <div className="flex justify-start">
@@ -239,14 +238,14 @@ const DashboardLayout = () => {
                     {/* Chat Input Area */}
                     <div className="p-3 border-t border-white/10 bg-[#0F111A]">
                         <form onSubmit={handleSendMessage} className="relative flex items-center">
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
-                                placeholder="Ask about taxes, budgets..." 
+                                placeholder="Ask about taxes, budgets..."
                                 className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all placeholder-slate-500"
                             />
-                            <button 
+                            <button
                                 type="submit"
                                 disabled={!inputText.trim()}
                                 className="absolute right-1.5 w-8 h-8 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-full flex items-center justify-center transition-colors"
@@ -259,17 +258,16 @@ const DashboardLayout = () => {
             )}
 
             {/* Floating Action Button */}
-            <button 
+            <button
                 onClick={() => setIsChatOpen(!isChatOpen)}
-                className={`fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] z-[100] transition-transform hover:scale-110 active:scale-95 ${
-                    isChatOpen ? 'bg-slate-800 text-slate-400 border border-white/10' : 'bg-gradient-to-tr from-purple-600 to-blue-500 text-white'
-                }`}
+                className={`fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] z-[100] transition-transform hover:scale-110 active:scale-95 ${isChatOpen ? 'bg-slate-800 text-slate-400 border border-white/10' : 'bg-gradient-to-tr from-purple-600 to-blue-500 text-white'
+                    }`}
             >
                 <span className="material-symbols-outlined text-[28px]">
                     {isChatOpen ? 'close' : 'smart_toy'}
                 </span>
             </button>
-            
+
         </div>
     );
 };

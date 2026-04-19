@@ -5,18 +5,18 @@ const TaxEstimator = () => {
 
     const [financialYear, setFinancialYear] = useState('2025-26');
     const [isSaving, setIsSaving] = useState(false);
-    const [savedPayments, setSavedPayments] = useState(null); 
-    const[isAnalyzing, setIsAnalyzing] = useState(false);
+    const [savedPayments, setSavedPayments] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [aiInsights, setAiInsights] = useState(null);
 
-    const[formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         employmentType: 'Business',
         grossIncome: '',
         businessExpenses: '',
         medicalInsurance: '',
         lifeInsurance: '',
         otherDeductions: '',
-        tdsDeducted: '' 
+        tdsDeducted: ''
     });
 
     const fetchEstimate = async () => {
@@ -26,7 +26,7 @@ const TaxEstimator = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await res.json();
-            
+
             if (result.success && result.data) {
                 const dbData = result.data;
                 setFormData({
@@ -40,7 +40,7 @@ const TaxEstimator = () => {
                 });
                 setSavedPayments(dbData.payments);
             } else {
-                setSavedPayments(null); 
+                setSavedPayments(null);
             }
         } catch (error) {
             console.error("Failed to fetch estimate", error);
@@ -53,12 +53,12 @@ const TaxEstimator = () => {
 
 
     const handleInputChange = (e) => {
-        setFormData({ ...formData,[e.target.name]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
 
     const gross = parseFloat(formData.grossIncome) || 0;
-    const deductions = 
+    const deductions =
         (parseFloat(formData.businessExpenses) || 0) +
         (parseFloat(formData.medicalInsurance) || 0) +
         (parseFloat(formData.lifeInsurance) || 0) +
@@ -91,10 +91,10 @@ const TaxEstimator = () => {
 
         // Simulate AI "thinking" time for the UX effect
         setTimeout(() => {
-            const insights =[];
+            const insights = [];
             const sec80C_Max = 150000;
             const sec80D_Max = 25000;
-            
+
             const current80C = parseFloat(formData.lifeInsurance) || 0;
             const current80D = parseFloat(formData.medicalInsurance) || 0;
             const grossInc = parseFloat(formData.grossIncome) || 0;
@@ -104,7 +104,7 @@ const TaxEstimator = () => {
             if (current80C < sec80C_Max) {
                 const gap = sec80C_Max - current80C;
                 // Assuming they are in the 20% bracket for the savings calculation
-                const potentialSavings = (gap * 0.20); 
+                const potentialSavings = (gap * 0.20);
                 insights.push({
                     title: "Section 80C (PPF/ELSS/Life Insurance)",
                     type: "warning",
@@ -152,7 +152,7 @@ const TaxEstimator = () => {
         try {
             const token = localStorage.getItem('token');
             const calculatedData = { totalTax, finalTaxPayable, q1, q2, q3, q4 };
-            
+
             const response = await fetch('/api/taxes/estimate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -210,20 +210,20 @@ const TaxEstimator = () => {
     // Helper component for Quarter Box
     const QuarterBox = ({ id, title, date, amount, percentage }) => {
         const isPaid = savedPayments ? savedPayments[id]?.isPaid : false;
-        
+
         return (
             <div className={`glass-panel p-4 rounded-xl border relative overflow-hidden transition-all flex flex-col justify-between ${isPaid ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-white/5 hover:border-blue-500/30'}`}>
                 <div>
                     <div className="text-xs text-slate-400 mb-1">{title} ({percentage}%)</div>
                     <div className="text-sm font-bold text-white mb-3">{date}</div>
                 </div>
-                
+
                 {/* FIXED: Stacked vertically with space-y-3 and made button w-full */}
                 <div className="mt-2 space-y-3">
                     <div className={`text-xl font-bold truncate ${isPaid ? 'text-emerald-400 opacity-50 line-through' : 'text-blue-400'}`}>
                         {formatCurrency(amount)}
                     </div>
-                    <button 
+                    <button
                         onClick={() => handleTogglePayment(id, isPaid)}
                         className={`w-full py-2 rounded-md text-xs font-bold transition-colors ${isPaid ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 hover:bg-yellow-500/20'}`}
                     >
@@ -236,7 +236,7 @@ const TaxEstimator = () => {
 
     return (
         <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative block pb-20">
-            
+
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
@@ -247,10 +247,10 @@ const TaxEstimator = () => {
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
+
                 {/* Left Column: Calculator */}
                 <div className="lg:col-span-8 space-y-8">
-                    
+
                     <div className="glass-panel p-6 rounded-2xl relative overflow-hidden flex-shrink-0">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -259,22 +259,22 @@ const TaxEstimator = () => {
                             </h3>
                             <span className="px-3 py-1 rounded bg-[#131620] border border-white/10 text-slate-300 text-xs font-medium">FY: {financialYear}</span>
                         </div>
-                        
+
                         <form className="space-y-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Employment Type</label>
                                 <div className="grid grid-cols-2 gap-3 mb-2">
-                                    <button type="button" onClick={() => setFormData({...formData, employmentType: 'Business', tdsDeducted: ''})} className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Business' ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Business / Freelance</button>
-                                    <button type="button" onClick={() => setFormData({...formData, employmentType: 'Salaried'})} className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Salaried' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Salaried</button>
+                                    <button type="button" onClick={() => setFormData({ ...formData, employmentType: 'Business', tdsDeducted: '' })} className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Business' ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Business / Freelance</button>
+                                    <button type="button" onClick={() => setFormData({ ...formData, employmentType: 'Salaried' })} className={`py-3 rounded-lg text-sm font-bold border transition-all ${formData.employmentType === 'Salaried' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}>Salaried</button>
                                 </div>
                             </div>
-                            
+
                             <hr className="border-white/5 my-4" />
-                            
+
                             <div className="space-y-4">
                                 <h4 className="text-sm font-semibold text-white">Income &amp; Deductions</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    
+
                                     <div className="space-y-2">
                                         <label className="text-xs text-slate-400">Gross Income</label>
                                         <div className="relative">
@@ -292,7 +292,7 @@ const TaxEstimator = () => {
                                             </div>
                                         </div>
                                     )}
-                                    
+
                                     <div className="space-y-2"><label className="text-xs text-slate-400">Business Expenses</label><div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span><input type="number" min="0" name="businessExpenses" value={formData.businessExpenses} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm" placeholder="0" /></div></div>
                                     <div className="space-y-2"><label className="text-xs text-slate-400">Medical Insurance</label><div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span><input type="number" min="0" name="medicalInsurance" value={formData.medicalInsurance} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm" placeholder="0" /></div></div>
                                     <div className="space-y-2"><label className="text-xs text-slate-400">Life Insurance / PPF</label><div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span><input type="number" min="0" name="lifeInsurance" value={formData.lifeInsurance} onChange={handleInputChange} className="w-full rounded-lg input-glass py-3 pl-8 pr-4 text-sm" placeholder="0" /></div></div>
@@ -310,7 +310,7 @@ const TaxEstimator = () => {
                                 Payment Tracker
                             </h3>
                         </div>
-                        
+
                         <div className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <QuarterBox id="q1" title="Quarter 1" date="15th June" amount={q1} percentage={15} />
@@ -321,7 +321,7 @@ const TaxEstimator = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {/* Right Column: Dynamic Tax Summary */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className="glass-panel p-8 rounded-2xl sticky top-24 border border-orange-500/20 shadow-[0_0_30px_rgba(249,115,22,0.05)]">
@@ -331,12 +331,12 @@ const TaxEstimator = () => {
                                 <span className="material-symbols-outlined text-orange-400">receipt_long</span>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="flex justify-between text-sm"><span className="text-slate-400">Gross Income</span><span className="text-white font-medium">{formatCurrency(gross)}</span></div>
                             <div className="flex justify-between text-sm"><span className="text-slate-400">Total Deductions</span><span className="text-red-400 font-medium">-{formatCurrency(deductions)}</span></div>
                             <div className="flex justify-between text-sm"><span className="text-slate-400">Taxable Income</span><span className="text-white font-bold">{formatCurrency(taxableIncome)}</span></div>
-                            
+
                             <div className="h-px bg-white/10 my-4"></div>
 
                             <div className="flex justify-between text-sm"><span className="text-slate-400">Total Tax</span><span className="text-white font-medium">{formatCurrency(totalTax)}</span></div>
@@ -347,7 +347,7 @@ const TaxEstimator = () => {
                                     <span className="text-emerald-400 font-medium">-{formatCurrency(tds)}</span>
                                 </div>
                             )}
-                            
+
                             <div className="bg-[#131620] p-4 rounded-xl border border-white/5 mt-4">
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-sm text-slate-300 font-bold">Remaining Tax</span>
@@ -357,8 +357,8 @@ const TaxEstimator = () => {
                             </div>
 
                             {/* --- THE NEW SAVE BUTTON --- */}
-                            <button 
-                                onClick={handleSaveEstimate} 
+                            <button
+                                onClick={handleSaveEstimate}
                                 disabled={isSaving}
                                 className="w-full mt-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
                             >
@@ -367,73 +367,71 @@ const TaxEstimator = () => {
 
                         </div>
                         {/* ✨ AI Tax Optimizer Widget */}
-                    <div className="glass-panel p-6 rounded-2xl relative overflow-hidden border border-purple-500/30 bg-gradient-to-br from-[#131620] to-purple-900/20 shadow-[0_0_30px_rgba(168,85,247,0.15)] mt-6">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none animate-pulse"></div>
-                        
-                        <div className="flex items-center gap-3 mb-4 relative z-10">
-                            <div className="p-2 rounded-lg bg-gradient-to-tr from-purple-600 to-blue-500 shadow-lg shadow-purple-500/30 text-white flex-shrink-0">
-                                <span className={`material-symbols-outlined ${isAnalyzing ? 'animate-spin' : 'animate-bounce'}`}>
-                                    {isAnalyzing ? 'refresh' : 'auto_awesome'}
-                                </span>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-                                    Smart Tax Optimizer
-                                </h3>
-                                <p className="text-[11px] text-slate-400">Powered by TaxPal AI</p>
-                            </div>
-                        </div>
+                        <div className="glass-panel p-6 rounded-2xl relative overflow-hidden border border-purple-500/30 bg-gradient-to-br from-[#131620] to-purple-900/20 shadow-[0_0_30px_rgba(168,85,247,0.15)] mt-6">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none animate-pulse"></div>
 
-                        <div className="relative z-10">
-                            {!aiInsights && !isAnalyzing ? (
+                            <div className="flex items-center gap-3 mb-4 relative z-10">
+                                <div className="p-2 rounded-lg bg-gradient-to-tr from-purple-600 to-blue-500 shadow-lg shadow-purple-500/30 text-white flex-shrink-0">
+                                    <span className={`material-symbols-outlined ${isAnalyzing ? 'animate-spin' : 'animate-bounce'}`}>
+                                        {isAnalyzing ? 'refresh' : 'auto_awesome'}
+                                    </span>
+                                </div>
                                 <div>
-                                    <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                                        Let AI scan your inputs against the Income Tax Act, 1961 to find hidden deductions and save you money.
-                                    </p>
-                                    <button 
-                                        onClick={generateTaxInsights}
-                                        className="w-full py-2.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 text-purple-300 text-sm font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)]"
-                                    >
-                                        Analyze My Tax Plan
-                                    </button>
+                                    <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                                        Smart Tax Optimizer
+                                    </h3>
+                                    <p className="text-[11px] text-slate-400">Powered by FINBRIDGE AI</p>
                                 </div>
-                            ) : isAnalyzing ? (
-                                <div className="space-y-4 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                                        <p className="text-xs text-purple-400 animate-pulse">Scanning Section 80C limits...</p>
+                            </div>
+
+                            <div className="relative z-10">
+                                {!aiInsights && !isAnalyzing ? (
+                                    <div>
+                                        <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+                                            Let AI scan your inputs against the Income Tax Act, 1961 to find hidden deductions and save you money.
+                                        </p>
+                                        <button
+                                            onClick={generateTaxInsights}
+                                            className="w-full py-2.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 text-purple-300 text-sm font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                                        >
+                                            Analyze My Tax Plan
+                                        </button>
                                     </div>
-                                    <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-purple-500 to-blue-500 w-2/3 animate-pulse rounded-full"></div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="space-y-3 mt-4 animate-fade-in">
-                                    {aiInsights.map((insight, idx) => (
-                                        <div key={idx} className={`p-3 rounded-xl border ${
-                                            insight.type === 'warning' ? 'bg-orange-500/10 border-orange-500/20 border-l-4 border-l-orange-500' :
-                                            insight.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 border-l-4 border-l-emerald-500' :
-                                            'bg-blue-500/10 border-blue-500/20 border-l-4 border-l-blue-500'
-                                        }`}>
-                                            <h4 className={`text-xs font-bold mb-1 ${
-                                                insight.type === 'warning' ? 'text-orange-400' :
-                                                insight.type === 'success' ? 'text-emerald-400' : 'text-blue-400'
-                                            }`}>{insight.title}</h4>
-                                            <p className="text-xs text-slate-300 leading-relaxed">{insight.text}</p>
+                                ) : isAnalyzing ? (
+                                    <div className="space-y-4 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                                            <p className="text-xs text-purple-400 animate-pulse">Scanning Section 80C limits...</p>
                                         </div>
-                                    ))}
-                                    
-                                    <button 
-                                        onClick={generateTaxInsights}
-                                        className="w-full mt-2 py-2 text-[11px] text-slate-400 hover:text-purple-400 transition-colors uppercase tracking-wider font-bold"
-                                    >
-                                        <span className="material-symbols-outlined text-[14px] align-middle mr-1">refresh</span>
-                                        Recalculate
-                                    </button>
-                                </div>
-                            )}
+                                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                            <div className="h-full bg-gradient-to-r from-purple-500 to-blue-500 w-2/3 animate-pulse rounded-full"></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3 mt-4 animate-fade-in">
+                                        {aiInsights.map((insight, idx) => (
+                                            <div key={idx} className={`p-3 rounded-xl border ${insight.type === 'warning' ? 'bg-orange-500/10 border-orange-500/20 border-l-4 border-l-orange-500' :
+                                                    insight.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 border-l-4 border-l-emerald-500' :
+                                                        'bg-blue-500/10 border-blue-500/20 border-l-4 border-l-blue-500'
+                                                }`}>
+                                                <h4 className={`text-xs font-bold mb-1 ${insight.type === 'warning' ? 'text-orange-400' :
+                                                        insight.type === 'success' ? 'text-emerald-400' : 'text-blue-400'
+                                                    }`}>{insight.title}</h4>
+                                                <p className="text-xs text-slate-300 leading-relaxed">{insight.text}</p>
+                                            </div>
+                                        ))}
+
+                                        <button
+                                            onClick={generateTaxInsights}
+                                            className="w-full mt-2 py-2 text-[11px] text-slate-400 hover:text-purple-400 transition-colors uppercase tracking-wider font-bold"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px] align-middle mr-1">refresh</span>
+                                            Recalculate
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>

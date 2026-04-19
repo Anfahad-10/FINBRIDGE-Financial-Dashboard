@@ -24,7 +24,7 @@ transporter.verify((error, success) => {
 const sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Taxpal Finance" <${process.env.EMAIL_USER}>`, // sender address
+      from: `"FINBRIDGE Finance" <${process.env.EMAIL_USER}>`, // sender address
       to, // list of receivers
       subject, // Subject line
       text, // plain text body
@@ -43,8 +43,8 @@ const sendEmail = async (to, subject, text, html) => {
    ========================== */
 
 async function sendRegistrationEmail(userEmail, name) {
-  const subject = "Welcome to Taxpal Finance – Your account is active 💎";
-  const text = `Hello ${name},\n\nWelcome to Taxpal Finance! Your account is now active. Start managing your wealth and optimizing your taxes today.\n\nGo to Dashboard: https://taxpal-finance.com/dashboard`;
+  const subject = "Welcome to FINBRIDGE Finance – Your account is active 💎";
+  const text = `Hello ${name},\n\nWelcome to FINBRIDGE Finance! Your account is now active. Start managing your wealth and optimizing your taxes today.\n\nGo to Dashboard: https://FINBRIDGE-finance.com/dashboard`;
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -108,7 +108,7 @@ async function sendRegistrationEmail(userEmail, name) {
         <table class="container">
           <tr>
             <td class="header">
-              <span style="font-size: 24px; font-weight: 800; color: #1DB954; letter-spacing: -0.5px;">Taxpal.</span>
+              <span style="font-size: 24px; font-weight: 800; color: #1DB954; letter-spacing: -0.5px;">FINBRIDGE.</span>
             </td>
           </tr>
         </table>
@@ -120,11 +120,11 @@ async function sendRegistrationEmail(userEmail, name) {
               <h1 class="title">Your financial journey starts now.</h1>
               
               <p class="body-copy">
-                Hello ${name}, thanks for joining Taxpal Finance. Your account is fully set up and ready to help you optimize your wealth and simplify your taxes.
+                Hello ${name}, thanks for joining FINBRIDGE Finance. Your account is fully set up and ready to help you optimize your wealth and simplify your taxes.
               </p>
 
               <div class="btn-wrapper">
-                <a href="https://taxpal-finance.com/dashboard" class="btn">Go to My Dashboard</a>
+                <a href="https://FINBRIDGE-finance.com/dashboard" class="btn">Go to My Dashboard</a>
               </div>
             </td>
           </tr>
@@ -133,7 +133,7 @@ async function sendRegistrationEmail(userEmail, name) {
         <!-- Full Width Footer -->
         <div class="footer-outer">
             <div class="footer-inner">
-              <span class="footer-logo">Taxpal</span>
+              <span class="footer-logo">FINBRIDGE</span>
               
               <div class="footer-links">
                 <span style="margin-right: 15px; color: #121212; font-weight: 700;">GET THE APP:</span>
@@ -152,8 +152,8 @@ async function sendRegistrationEmail(userEmail, name) {
               </div>
               
               <p class="address">
-                This email was sent to ${userEmail} because you registered an account with Taxpal Finance.<br><br>
-                Taxpal Finance Inc.<br>
+                This email was sent to ${userEmail} because you registered an account with FINBRIDGE Finance.<br><br>
+                FINBRIDGE Finance Inc.<br>
                 255 Financial District, 7th Floor<br>
                 New York, NY 10004, USA
               </p>
@@ -170,9 +170,9 @@ async function sendRegistrationEmail(userEmail, name) {
    2. RESET PASSWORD EMAIL (NEW)
    ========================== */
 async function sendResetPasswordEmail(userEmail, resetUrl) {
-  const subject = "Reset Your Password - Taxpal Finance";
+  const subject = "Reset Your Password - FINBRIDGE Finance";
   const text = `You requested a password reset. Click here to reset: ${resetUrl}`;
-  
+
   // Reusing your styles but changing content for Reset logic
   const html = `
     <!DOCTYPE html>
@@ -198,13 +198,13 @@ async function sendResetPasswordEmail(userEmail, resetUrl) {
     </head>
     <body>
       <div class="wrapper">
-        <table class="container"><tr><td class="header"><span style="font-size: 24px; font-weight: 800; color: #1DB954; letter-spacing: -0.5px;">Taxpal.</span></td></tr></table>
+        <table class="container"><tr><td class="header"><span style="font-size: 24px; font-weight: 800; color: #1DB954; letter-spacing: -0.5px;">FINBRIDGE.</span></td></tr></table>
         <table class="container">
           <tr>
             <td class="main-content">
               <h1 class="title">Forgot your password?</h1>
               <p class="body-copy">
-                We received a request to reset the password for your Taxpal account. 
+                We received a request to reset the password for your FINBRIDGE account. 
                 <br><br>
                 If you didn't make this request, ignore this email. Otherwise, you can reset your password using the button below.
                 <br>
@@ -216,7 +216,7 @@ async function sendResetPasswordEmail(userEmail, resetUrl) {
             </td>
           </tr>
         </table>
-        <div class="footer-outer"><div class="footer-inner"><span class="footer-logo">Taxpal</span><p class="address">Taxpal Finance Inc.</p></div></div>
+        <div class="footer-outer"><div class="footer-inner"><span class="footer-logo">FINBRIDGE</span><p class="address">FINBRIDGE Finance Inc.</p></div></div>
       </div>
     </body>
     </html>
@@ -227,4 +227,4 @@ async function sendResetPasswordEmail(userEmail, resetUrl) {
 
 
 
-module.exports = { sendRegistrationEmail , sendResetPasswordEmail  };
+module.exports = { sendRegistrationEmail, sendResetPasswordEmail };

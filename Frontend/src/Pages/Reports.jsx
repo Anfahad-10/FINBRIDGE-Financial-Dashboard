@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveCont
 const Reports = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     const [reportConfig, setReportConfig] = useState({
         type: 'All Transactions',
         period: 'All Time',
@@ -13,7 +13,7 @@ const Reports = () => {
     });
 
     const [previewData, setPreviewData] = useState(null);
-    const[reportHistory, setReportHistory] = useState([]); // Mock history for the bottom table
+    const [reportHistory, setReportHistory] = useState([]); // Mock history for the bottom table
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -23,7 +23,7 @@ const Reports = () => {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const result = await response.json();
-                
+
                 if (result.success) {
                     setTransactions(result.data);
                 }
@@ -35,7 +35,7 @@ const Reports = () => {
         };
 
         fetchTransactions();
-    },[]);
+    }, []);
 
     const handleInputChange = (e) => {
         setReportConfig({
@@ -109,10 +109,10 @@ const Reports = () => {
 
         // CSV Headers
         const headers = ['Date', 'Description', 'Category', 'Type', 'Amount'];
-        
+
         // CSV Rows
         const csvRows = previewData.records.map(tx => {
-            return[
+            return [
                 new Date(tx.date).toLocaleDateString(),
                 `"${tx.description || 'No Description'}"`, // Quotes prevent commas in descriptions from breaking the CSV
                 tx.category,
@@ -122,13 +122,13 @@ const Reports = () => {
         });
 
         const csvString = [headers.join(','), ...csvRows].join('\n');
-        
+
         const blob = new Blob([csvString], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
-        
+
         const a = document.createElement('a');
         a.setAttribute('href', url);
-        a.setAttribute('download', `TaxPal_${reportConfig.type.replace(' ', '_')}_${Date.now()}.csv`);
+        a.setAttribute('download', `FINBRIDGE_${reportConfig.type.replace(' ', '_')}_${Date.now()}.csv`);
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -142,7 +142,7 @@ const Reports = () => {
 
     return (
         <main className="flex-1 md:ml-64 p-6 md:p-10 pt-20 md:pt-10 h-screen overflow-y-auto z-10 relative flex flex-col">
-            
+
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
@@ -159,7 +159,7 @@ const Reports = () => {
                     </div>
                     <h2 className="text-lg font-bold text-white">Generate Report</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
                     <div className="space-y-2">
                         <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Report Type</label>
@@ -169,7 +169,7 @@ const Reports = () => {
                             <option>Expense Report</option>
                         </select>
                     </div>
-                    
+
                     <div className="space-y-2">
                         <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Period</label>
                         <select name="period" value={reportConfig.period} onChange={handleInputChange} className="w-full bg-[#131620] border border-white/10 rounded-lg text-white text-sm px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
@@ -179,7 +179,7 @@ const Reports = () => {
                             <option>Year to Date</option>
                         </select>
                     </div>
-                    
+
                     <div className="space-y-2">
                         <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Format</label>
                         <select name="format" value={reportConfig.format} onChange={handleInputChange} className="w-full bg-[#131620] border border-white/10 rounded-lg text-white text-sm px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
@@ -187,7 +187,7 @@ const Reports = () => {
                             <option disabled>PDF Document (.pdf) - Coming Soon</option>
                         </select>
                     </div>
-                    
+
                     <div className="flex gap-3">
                         <button onClick={handleReset} className="flex-1 px-4 py-2.5 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">
                             Reset
@@ -207,7 +207,7 @@ const Reports = () => {
                         Report Preview {previewData && `- ${reportConfig.type} (${reportConfig.period})`}
                     </h3>
                     <div className="flex gap-2">
-                        <button 
+                        <button
                             onClick={downloadCSV}
                             disabled={!previewData || previewData.records.length === 0}
                             className="px-4 py-1.5 rounded-lg bg-white/10 border border-white/10 text-white hover:bg-white/20 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -217,7 +217,7 @@ const Reports = () => {
                         </button>
                     </div>
                 </div>
-                
+
                 {/* DYNAMIC CONTENT based on whether they clicked Generate */}
                 {!previewData ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-12 relative report-preview-placeholder">
@@ -247,11 +247,11 @@ const Reports = () => {
 
                         {/* Quick Chart Visual */}
                         <div className="h-32 mb-6 w-full border-b border-white/5 pb-6">
-                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={[{name: 'Summary', Income: previewData.totalIncome, Expense: previewData.totalExpense}]} layout="vertical">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={[{ name: 'Summary', Income: previewData.totalIncome, Expense: previewData.totalExpense }]} layout="vertical">
                                     <XAxis type="number" hide />
                                     <YAxis type="category" dataKey="name" hide />
-                                    <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{backgroundColor: '#131620', border: '1px solid rgba(255,255,255,0.1)'}} formatter={(val) => formatCurrency(val)}/>
+                                    <RechartsTooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#131620', border: '1px solid rgba(255,255,255,0.1)' }} formatter={(val) => formatCurrency(val)} />
                                     <Bar dataKey="Income" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
                                     <Bar dataKey="Expense" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={20} />
                                 </BarChart>
@@ -270,7 +270,7 @@ const Reports = () => {
                 <div className="p-6 border-b border-white/5 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-white">Recent Generations</h3>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>

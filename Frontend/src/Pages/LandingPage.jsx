@@ -16,7 +16,7 @@ const LandingPage = () => {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500/80 to-purple-500/20 border border-blue-400/20 flex items-center justify-center backdrop-blur-sm">
             <span className="material-symbols-outlined text-white text-[20px]">account_balance_wallet</span>
           </div>
-          <span className="header-text text-xl font-bold text-white tracking-tight">TaxPal Finance</span>
+          <span className="header-text text-xl font-bold text-white tracking-tight">FINBRIDGE Finance</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
           <a class="hover:text-white transition-colors" href="#features">Features</a>
@@ -44,7 +44,7 @@ const LandingPage = () => {
             Tax tracking for the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">modern freelancer</span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed max-w-lg">
-            Stop worrying about surprise tax bills. TaxPal helps you track income, categorize expenses, and estimate quarterly taxes automatically.
+            Stop worrying about surprise tax bills. FINBRIDGE helps you track income, categorize expenses, and estimate quarterly taxes automatically.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Link to="/signup">
@@ -66,7 +66,7 @@ const LandingPage = () => {
             <p>Trusted by 10,000+ freelancers</p>
           </div>
         </div>
-        
+
         {/* Hero Visual/Dashboard Mockup */}
         <div className="relative lg:h-[600px] flex items-center justify-center perspective-1000">
           <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full opacity-40"></div>
@@ -199,7 +199,7 @@ const LandingPage = () => {
             <div className="w-6 h-6 rounded bg-gradient-to-tr from-blue-500/80 to-purple-500/20 border border-blue-400/20 flex items-center justify-center">
               <span className="material-symbols-outlined text-white text-[14px]">account_balance_wallet</span>
             </div>
-            <span className="header-text text-lg font-bold text-slate-300">TaxPal Finance</span>
+            <span className="header-text text-lg font-bold text-slate-300">FINBRIDGE Finance</span>
           </div>
 
 
@@ -211,12 +211,12 @@ const LandingPage = () => {
           </div>
 
           <div className="text-slate-600 text-sm">
-            © 2026 TaxPal Inc.
+            © 2026 FINBRIDGE Inc.
           </div>
         </div>
 
         <div className="border-t border-white/5">
-            <FooterCredit />
+          <FooterCredit />
         </div>
       </footer>
     </div>

@@ -22,7 +22,10 @@ app.use("/api/taxes", taxRouter);
 app.use("/api/ai", aiRouter);
 
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // adjust port (if needed)
+app.use(cors({ 
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+    credentials: true 
+}));
 app.use(express.json());
 
 

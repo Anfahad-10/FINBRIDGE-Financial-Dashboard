@@ -50,7 +50,7 @@ function Login() {
                 </svg>
               </div>
             </div>
-            <h1 className="header-text text-[28px] font-bold text-white mb-2">Sign in to TaxPal</h1>
+            <h1 className="header-text text-[28px] font-bold text-white mb-2">Sign in to FINBRIDGE</h1>
             <p className="text-slate-400 text-[15px] font-normal leading-relaxed">Manage your freelance finances efficiently.</p>
           </div>
 
@@ -74,18 +74,18 @@ function Login() {
                 <label className="text-[13px] font-medium text-slate-400" htmlFor="password">Password</label>
                 <Link to="/forgot-password" className="text-[13px] text-blue-400 hover:text-blue-300 transition-colors font-medium">Forgot password?</Link>
               </div>
-              <input 
-              className="w-full px-4 py-3 custom-input rounded-lg text-[15px] placeholder-slate-600 focus:ring-0" 
-              id="password" 
-              name="password"
-              value={loginInfo.password}
-              onChange={handleChange}
-              placeholder="••••••••" 
-              required
-              type="password" 
+              <input
+                className="w-full px-4 py-3 custom-input rounded-lg text-[15px] placeholder-slate-600 focus:ring-0"
+                id="password"
+                name="password"
+                value={loginInfo.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                type="password"
               />
             </div>
-            
+
             <button className="w-full bg-white hover:bg-gray-50 text-slate-900 font-bold py-3.5 rounded-lg mt-6 text-[15px] shadow-lg shadow-white/10 transition-all duration-200" type="submit">
               Log In
             </button>

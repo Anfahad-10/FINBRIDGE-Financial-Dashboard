@@ -158,7 +158,7 @@ const resetPasswordController = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    console.log("User from DB:", req.user);
+    //console.log("User from DB:", req.user);
     const user = await userModel.findById(req.user._id);
 
 

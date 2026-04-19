@@ -47,46 +47,46 @@ function SignUp() {
                 </svg>
               </div>
             </div>
-            <h1 className="font-display text-[26px] font-bold text-white mb-2">Create your TaxPal account</h1>
+            <h1 className="font-display text-[26px] font-bold text-white mb-2">Create your FINBRIDGE account</h1>
             <p className="text-slate-400 text-[14px] font-normal">Start managing your freelance finances today.</p>
           </div>
 
           <form onSubmit={handleSignup} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-[13px] font-medium text-slate-400 ml-0.5" htmlFor="fullname">Full Name</label>
-              <input 
-              className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0" 
-              id="fullname" 
-              name="name"
-              value={signupInfo.name}
-              onChange={handleChange}
-              placeholder="John Doe" 
-              required 
-              type="text" />
+              <input
+                className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0"
+                id="fullname"
+                name="name"
+                value={signupInfo.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                required
+                type="text" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[13px] font-medium text-slate-400 ml-0.5" htmlFor="email">Email address</label>
-              <input 
-              className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0" 
-              id="email" 
-              name="email"
-              value={signupInfo.email}
-              onChange={handleChange}
-              placeholder="name@company.com" 
-              required 
-              type="email" />
+              <input
+                className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0"
+                id="email"
+                name="email"
+                value={signupInfo.email}
+                onChange={handleChange}
+                placeholder="name@company.com"
+                required
+                type="email" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[13px] font-medium text-slate-400 ml-0.5" htmlFor="password">Password</label>
-              <input 
-              className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0" 
-              id="password" 
-              name="password"
-              value={signupInfo.password}
-              onChange={handleChange}
-              placeholder="Min. 8 characters" 
-              required 
-              type="password" />
+              <input
+                className="w-full px-4 py-3 custom-input rounded-lg text-[14px] placeholder-slate-600 focus:ring-0"
+                id="password"
+                name="password"
+                value={signupInfo.password}
+                onChange={handleChange}
+                placeholder="Min. 8 characters"
+                required
+                type="password" />
             </div>
             <div className="pt-2">
               <button className="w-full shimmer-btn font-bold py-3.5 rounded-lg text-[14px] text-slate-900 shadow-lg tracking-tight hover:shadow-xl" type="submit">

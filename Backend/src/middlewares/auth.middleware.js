@@ -8,7 +8,7 @@ exports.protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
 
     token = req.headers.authorization.split(" ")[1]; // Get token after "Bearer "
-    console.log("Token:", token);
+    //console.log("Token:", token);
   }
 
   if (!token) {
@@ -18,12 +18,12 @@ exports.protect = async (req, res, next) => {
   try {
     // 2. Verify Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded Token:", decoded);
-    console.log("JWT_SECRET:", process.env.JWT_SECRET);
+    //console.log("Decoded Token:", decoded);
+    //console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
     // 3. Find user by ID from token and attach to the request object
     req.user = await userModel.findById(decoded.userId);
-    console.log(req.user);
+    //console.log(req.user);
     // Move to the next function
     next();
   } catch (error) {
