@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
 const Budgets = () => {
@@ -458,9 +458,7 @@ const Budgets = () => {
             </div>
 
             {/* --- GLOBAL FOOTER --- */}
-            <div className="border-t border-white/5 mt-8 pt-6">
-                <FooterCredit />
-            </div>
+
 
         </main>
     );

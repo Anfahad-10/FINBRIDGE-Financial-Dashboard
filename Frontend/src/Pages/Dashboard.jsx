@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 import { 
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, ReferenceLine 
@@ -501,9 +501,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="border-t border-white/5 mt-auto">
-                <FooterCredit />
-            </div>
+
 
         </main>
     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 
 const LandingPage = () => {
   return (
@@ -215,9 +215,6 @@ const LandingPage = () => {
           </div>
         </div>
 
-        <div className="border-t border-white/5">
-          <FooterCredit />
-        </div>
       </footer>
     </div>
   );

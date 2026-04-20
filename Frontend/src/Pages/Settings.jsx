@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 
 const Settings = () => {
     const { user } = useOutletContext();
@@ -139,9 +139,7 @@ const Settings = () => {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-white/5 mt-auto pt-6 flex-shrink-0">
-                <FooterCredit />
-            </div>
+
 
         </main>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 
 const TaxEstimator = () => {
 
@@ -436,9 +436,6 @@ const TaxEstimator = () => {
                 </div>
             </div>
 
-            <div className="border-t border-white/5 mt-auto pt-6 flex-shrink-0">
-                <FooterCredit />
-            </div>
         </main>
     );
 };

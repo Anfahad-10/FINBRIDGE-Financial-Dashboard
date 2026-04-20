@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const Reports = () => {
@@ -311,9 +311,6 @@ const Reports = () => {
             </div>
 
             {/* --- GLOBAL FOOTER --- */}
-            <div className="border-t border-white/5 mt-auto pt-6 flex-shrink-0">
-                <FooterCredit />
-            </div>
 
         </main>
     );

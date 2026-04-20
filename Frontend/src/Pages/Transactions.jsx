@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import FooterCredit from '../Components/FooterCredit';
+//import FooterCredit from '../Components/FooterCredit';
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
@@ -165,9 +165,7 @@ const Transactions = () => {
             </div>
 
             {/* --- GLOBAL FOOTER --- */}
-            <div className="border-t border-white/5 mt-auto pt-6 flex-shrink-0">
-                <FooterCredit />
-            </div>
+
 
         </main>
     );
